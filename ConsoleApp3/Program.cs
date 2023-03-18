@@ -44,19 +44,19 @@ List<Point> GetNeighbors(string[,] map, Point p)
     int py = p.Row;
     
     // zroby optymalnishe cherez offset
-    if (py + 1 < map.GetLength(0) && py + 1 >= 0 && px < map.GetLength(1) && px >= 0 && !IsWall(map[px, py + 1]))
+    if (py + 1 < map.GetLength(1) && py + 1 >= 0 && px < map.GetLength(0) && px >= 0 && !IsWall(map[px, py + 1]))
     {
         result.Add(new Point(px, py + 1));
     }
-    if (py - 1 < map.GetLength(0) && py - 1 >= 0 && px < map.GetLength(1) && px >= 0 && !IsWall(map[px, py - 1]))
+    if (py - 1 < map.GetLength(1) && py - 1 >= 0 && px < map.GetLength(0) && px >= 0 && !IsWall(map[px, py - 1]))
     {
         result.Add(new Point(px, py - 1));
     }
-    if (py < map.GetLength(0) && py >= 0 && px + 1 < map.GetLength(1) && px + 1 >= 0 && !IsWall(map[px + 1, py]))
+    if (py < map.GetLength(1) && py >= 0 && px + 1 < map.GetLength(0) && px + 1 >= 0 && !IsWall(map[px + 1, py]))
     {
         result.Add(new Point(px+1, py));
     }
-    if (py < map.GetLength(0) && py >= 0 && px - 1 < map.GetLength(1) && px - 1 >= 0 && !IsWall(map[px - 1, py]))
+    if (py < map.GetLength(1) && py >= 0 && px - 1 < map.GetLength(0) && px - 1 >= 0 && !IsWall(map[px - 1, py]))
     {
         result.Add(new Point(px-1, py));
     }
@@ -68,27 +68,39 @@ List<Point> GetShortestPath(string[,] map, Point start, Point goal)
 {
     Queue<Point> frontier = new Queue<Point>();
     Dictionary<Point, Point?> CameFrom = new Dictionary<Point, Point?>();
+    
+    CameFrom.Add(start, null);
     frontier.Enqueue(start);
 
     while (frontier.Count > 0)
     {
-        Point p = frontier.Dequeue();
+        Point cur = frontier.Dequeue();
         
-        CameFrom.Add(start, null);
-        if (IsEqual(p, goal))
+        if (IsEqual(cur, goal))
         {
             break;
         }
         
-        //get neighbors
-        // foreach (Point neighbor in GetNeighbors(p.Row, p.Column, map))
-        // {
-        //     if (CameFrom.TryGetValue(neighbor, out _))
-        //     {
-        //         CameFrom.Add(neighbor, p);
-        //         frontier.Enqueue(neighbor);
-        //     }
-        // }
+        // get neighbors
+         foreach (Point neighbor in GetNeighbors(map, cur))
+         {
+             if (CameFrom.TryGetValue(neighbor, out _))
+             {
+                 CameFrom.Add(neighbor, cur);
+                 frontier.Enqueue(neighbor);
+             }
+         }
+
+         List<Point> path = new List<Point>();
+         Point? current = goal;
+
+         while (!IsEqual(current.Value, goal))
+         {
+             path.Add(current.Value);
+             CameFrom.TryGetValue(current.Value, out current);
+         }
+
+         return path;
     }
     return new List<Point>();
 }
@@ -102,24 +114,13 @@ var generator = new MapGenerator(new MapGeneratorOptions()
 
 string[,] map = generator.Generate();
 
-List<Point> path = new List<Point>(new Point[]
-{
-    new Point(0, 0),
-    new Point(1, 0),
-    new Point(2, 0),
-    new Point(3, 0),
-});
-
-Point p = new Point(12, 7);
-
-List<Point> n = GetNeighbors(map,p);
-foreach (Point neighbor in GetNeighbors(map, p))
-{
-    map[p.Column, p.Row] = "N";
-}
-
+Point start = new Point(0, 0);
+Point goal = new Point(0, 2);
+List<Point> path = GetShortestPath(map, start, goal);
 
 PrintMap(map, path);
+
+// new MapPrinter().Print(map);
 
 // placing a cross
 // map[14, 6] = "X";
@@ -127,3 +128,21 @@ PrintMap(map, path);
 // prints width and height
 // Console.WriteLine(map.GetLength(0));
 // Console.WriteLine(map.GetLength(1));
+
+// List<Point> path = new List<Point>(new Point[]
+// {
+//     new Point(0, 0),
+//     new Point(1, 0),
+//     new Point(2, 0),
+//     new Point(3, 0),
+// });
+//
+// Point p = new Point(12, 7);
+//
+// map[p.Column, p.Row] = "X";
+
+// foreach (Point neighbor in GetNeighbors(map, p))
+// {
+//     map[neighbor.Column, neighbor.Row] = "N";
+// }
+
