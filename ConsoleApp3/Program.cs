@@ -75,35 +75,37 @@ List<Point> GetShortestPath(string[,] map, Point start, Point goal)
     while (frontier.Count > 0)
     {
         Point cur = frontier.Dequeue();
-        
+
         if (IsEqual(cur, goal))
         {
             break;
         }
-        
+
         // get neighbors
-         foreach (Point neighbor in GetNeighbors(map, cur))
-         {
-             if (CameFrom.TryGetValue(neighbor, out _))
-             {
-                 CameFrom.Add(neighbor, cur);
-                 frontier.Enqueue(neighbor);
-             }
-         }
-
-         List<Point> path = new List<Point>();
-         Point? current = goal;
-
-         while (!IsEqual(current.Value, goal))
-         {
-             path.Add(current.Value);
-             CameFrom.TryGetValue(current.Value, out current);
-         }
-
-         return path;
+        foreach (Point neighbor in GetNeighbors(map, cur))
+        {
+            if (CameFrom.TryGetValue(neighbor, out _))
+            {
+                CameFrom.Add(neighbor, cur);
+                frontier.Enqueue(neighbor);
+            }
+        }
     }
-    return new List<Point>();
+
+    List<Point> path = new List<Point>();
+    Point? current = goal;
+
+    while (!IsEqual(current.Value, start))
+    {
+        path.Add(current.Value);
+        CameFrom.TryGetValue(current.Value, out current);
+    }
+    path.Add(start);
+    
+    path.Reverse();
+    return path;
 }
+
 
 var generator = new MapGenerator(new MapGeneratorOptions()
 {
