@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using ConsoleApp3;
+﻿using ConsoleApp3;
 
 // instead of adding methods to Point
 bool IsEqual(Point a, Point b)
@@ -67,9 +66,9 @@ List<Point> GetNeighbors(string[,] map, Point p)
 List<Point> GetShortestPath(string[,] map, Point start, Point goal)
 {
     Queue<Point> frontier = new Queue<Point>();
-    Dictionary<Point, Point?> CameFrom = new Dictionary<Point, Point?>();
+    Dictionary<Point, Point?> cameFrom = new Dictionary<Point, Point?>();
     
-    CameFrom.Add(start, null);
+    cameFrom.Add(start, null);
     frontier.Enqueue(start);
 
     while (frontier.Count > 0)
@@ -83,9 +82,9 @@ List<Point> GetShortestPath(string[,] map, Point start, Point goal)
         // get neighbors
         foreach (Point neighbor in GetNeighbors(map, cur))
         {
-            if (CameFrom.TryGetValue(neighbor, out _))
+            if (cameFrom.TryGetValue(neighbor, out _))
             {
-                CameFrom.Add(neighbor, cur);
+                cameFrom.Add(neighbor, cur);
                 frontier.Enqueue(neighbor);
             }
         }
@@ -94,10 +93,10 @@ List<Point> GetShortestPath(string[,] map, Point start, Point goal)
     List<Point> path = new List<Point>();
     Point? current = goal;
 
-    while (!IsEqual(current.Value, start))
+    while (current != null && !IsEqual(current.Value, start))
     {
         path.Add(current.Value);
-        CameFrom.TryGetValue(current.Value, out current);
+        cameFrom.TryGetValue(current.Value, out current);
     }
     path.Add(start);
     
