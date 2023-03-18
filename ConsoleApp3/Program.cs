@@ -21,7 +21,7 @@ void PrintMap(string[,] map, List<Point> path)
         {
             map[p.Column, p.Row] = "B";
         }
-        else
+        else 
         {
             map[p.Column, p.Row] = ".";
         }
@@ -82,7 +82,7 @@ List<Point> GetShortestPath(string[,] map, Point start, Point goal)
         // get neighbors
         foreach (Point neighbor in GetNeighbors(map, cur))
         {
-            if (cameFrom.TryGetValue(neighbor, out _))
+            if (!cameFrom.TryGetValue(neighbor, out _))
             {
                 cameFrom.Add(neighbor, cur);
                 frontier.Enqueue(neighbor);
@@ -93,7 +93,7 @@ List<Point> GetShortestPath(string[,] map, Point start, Point goal)
     List<Point> path = new List<Point>();
     Point? current = goal;
 
-    while (current != null && !IsEqual(current.Value, start))
+    while (!IsEqual(current.Value, start))
     {
         path.Add(current.Value);
         cameFrom.TryGetValue(current.Value, out current);
@@ -108,7 +108,7 @@ var generator = new MapGenerator(new MapGeneratorOptions()
 {
     Height = 10,
     Width = 15,
-    Seed = 12312,
+    Seed = 123,
 });
 
 string[,] map = generator.Generate();
@@ -144,4 +144,5 @@ PrintMap(map, path);
 // {
 //     map[neighbor.Column, neighbor.Row] = "N";
 // }
+
 
