@@ -75,7 +75,6 @@ List<Point> GetShortestPath(string[,] map, Point start, Point goal)
     while (frontier.Count > 0)
     {
         Point cur = frontier.Dequeue();
-
         if (IsEqual(cur, goal))
         {
             break;
@@ -105,7 +104,6 @@ List<Point> GetShortestPath(string[,] map, Point start, Point goal)
     path.Reverse();
     return path;
 }
-
 
 var generator = new MapGenerator(new MapGeneratorOptions()
 {
