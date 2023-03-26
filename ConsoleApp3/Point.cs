@@ -10,4 +10,9 @@ public struct Point
         Column = column;
         Row = row;
     }
+    
+    public bool IsEqual(Point b)
+    {
+        return this.Column == b.Column && this.Row == b.Row;
+    }
 }

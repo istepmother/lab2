@@ -4,8 +4,27 @@
 // оскільки завжди буде легко виводити шлях на екран , List<Point> path
 public class MapPrinter
 {
-    public void Print(string[,] maze)
+    public void Print(string[,] maze, List<Point> path)
         {
+            Point start = path[0];
+            Point end = path[^1];
+
+            foreach (Point p in path)
+            {
+                if (p.IsEqual(start))
+                {
+                    maze[p.Column, p.Row] = "A";
+                }
+                else if (p.IsEqual(end))
+                {
+                    maze[p.Column, p.Row] = "B";
+                }
+                else 
+                {
+                    maze[p.Column, p.Row] = ".";
+                }
+            }
+            
             PrintTopLine();
             for (var row = 0; row < maze.GetLength(1); row++)
             {

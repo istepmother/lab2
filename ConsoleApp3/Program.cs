@@ -1,41 +1,12 @@
 ﻿using ConsoleApp3;
 
-// instead of adding methods to Point
-bool IsEqual(Point a, Point b)
-{
-    return a.Column == b.Column && a.Row == b.Row;
-}
-
-void PrintMap(string[,] map, List<Point> path)
-{
-    Point start = path[0];
-    Point end = path[^1];
-
-    foreach (Point p in path)
-    {
-        if (IsEqual(p, start))
-        {
-            map[p.Column, p.Row] = "A";
-        }
-        else if (IsEqual(p, end))
-        {
-            map[p.Column, p.Row] = "B";
-        }
-        else 
-        {
-            map[p.Column, p.Row] = ".";
-        }
-    }
-    
-    new MapPrinter().Print(map);
-}
 
 bool IsWall(string s)
 {
     return s == "█";
 }
 
-List<Point> GetNeighbors(string[,] map, Point p)
+List<Point> GetNeighbours(string[,] map, Point p)
 {
     List<Point> result = new List<Point>();
 
@@ -65,43 +36,91 @@ List<Point> GetNeighbors(string[,] map, Point p)
 
 List<Point> GetShortestPath(string[,] map, Point start, Point goal)
 {
-    Queue<Point> frontier = new Queue<Point>();
-    Dictionary<Point, Point?> cameFrom = new Dictionary<Point, Point?>();
-    
-    cameFrom.Add(start, null);
+    var localPath = new List<Point> {start};
+    var lastPoint = goal;
+    var costSoFar = new Dictionary<Point, int>();
+    var cameFrom = new Dictionary<Point, Point>();
+    var frontier = new Queue<Point>();
     frontier.Enqueue(start);
-
-    while (frontier.Count > 0)
+    costSoFar.Add(start, 0);
+    while (frontier.Count != 0)
     {
-        Point cur = frontier.Dequeue();
-        if (IsEqual(cur, goal))
+        var current = frontier.Dequeue();
+        var available = GetNeighbours(map, current);
+        foreach (var point in available)
         {
-            break;
-        }
-
-        // get neighbors
-        foreach (Point neighbor in GetNeighbors(map, cur))
-        {
-            if (!cameFrom.TryGetValue(neighbor, out _))
+            if (!cameFrom.ContainsKey(point))
             {
-                cameFrom.Add(neighbor, cur);
-                frontier.Enqueue(neighbor);
+                frontier.Enqueue(point);
+                cameFrom.Add(point, current);
+                if (!costSoFar.ContainsKey(point))
+                {
+                    costSoFar.Add(point, costSoFar[current] + 1);
+                }
+            }
+            else if (costSoFar[current] + 1 < costSoFar[point])
+            {
+                cameFrom[point] = current;
+                costSoFar[point] = costSoFar[current] + 1;
             }
         }
+
+        if (current.Equals(goal))
+        {
+            lastPoint = goal;
+            break;
+        }
     }
 
-    List<Point> path = new List<Point>();
-    Point? current = goal;
-
-    while (!IsEqual(current.Value, start))
+    var lenOf = costSoFar[lastPoint];
+    for (var i = 0; i != lenOf; i++)
     {
-        path.Add(current.Value);
-        cameFrom.TryGetValue(current.Value, out current);
+        var path = cameFrom[lastPoint];
+        localPath.Add(path);
+        lastPoint = path;
     }
-    path.Add(start);
+
+    localPath.Add(goal);
+    return localPath;
     
-    path.Reverse();
-    return path;
+    
+    // Queue<Point> frontier = new Queue<Point>();
+    // Dictionary<Point, Point?> cameFrom = new Dictionary<Point, Point?>();
+    //
+    // cameFrom.Add(start, null);
+    // frontier.Enqueue(start);
+    //
+    // while (frontier.Count > 0)
+    // {
+    //     Point cur = frontier.Dequeue();
+    //     if (IsEqual(cur, goal))
+    //     {
+    //         break;
+    //     }
+    //
+    //     // get neighbors
+    //     foreach (Point neighbor in GetNeighbors(map, cur))
+    //     {
+    //         if (!cameFrom.TryGetValue(neighbor, out _))
+    //         {
+    //             cameFrom.Add(neighbor, cur);
+    //             frontier.Enqueue(neighbor);
+    //         }
+    //     }
+    // }
+    //
+    // List<Point> path = new List<Point>();
+    // Point? current = goal;
+    //
+    // while (!IsEqual(current.Value, start))
+    // {
+    //     path.Add(current.Value);
+    //     cameFrom.TryGetValue(current.Value, out current);
+    // }
+    // path.Add(start);
+    //
+    // path.Reverse();
+    // return path;
 }
 
 var generator = new MapGenerator(new MapGeneratorOptions()
@@ -113,11 +132,11 @@ var generator = new MapGenerator(new MapGeneratorOptions()
 
 string[,] map = generator.Generate();
 
-Point start = new Point(0, 0);
+Point start = new Point(10, 5);
 Point goal = new Point(0, 2);
 List<Point> path = GetShortestPath(map, start, goal);
 
-PrintMap(map, path);
+new MapPrinter().Print(map, path);
 
 // new MapPrinter().Print(map);
 
