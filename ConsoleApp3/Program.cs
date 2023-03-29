@@ -30,8 +30,7 @@ List<Point> GetNeighbours(string[,] map, Point p)
             result.Add(new Point(nx, ny));
         }
     }
-
-
+    
     return result;
 }
 
@@ -100,7 +99,7 @@ List<Point> GetShortestPath(string[,] map, Point start, Point goal)
     //     }
     //
     //     // get neighbors
-    //     foreach (Point neighbor in GetNeighbors(map, cur))
+    //     foreach (Point neighbor in GetNeighbours(map, cur))
     //     {
     //         if (!cameFrom.TryGetValue(neighbor, out _))
     //         {
@@ -139,7 +138,10 @@ List<Point> path = GetShortestPath(map, start, goal);
 
 new MapPrinter().Print(map, path);
 
-// new MapPrinter().Print(map);
+
+
+
+
 
 // placing a cross
 // map[14, 6] = "X";
@@ -160,7 +162,7 @@ new MapPrinter().Print(map, path);
 //
 // map[p.Column, p.Row] = "X";
 
-// foreach (Point neighbor in GetNeighbors(map, p))
+// foreach (Point neighbor in GetNeighbours(map, p))
 // {
 //     map[neighbor.Column, neighbor.Row] = "N";
 // }
