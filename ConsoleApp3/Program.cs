@@ -1,6 +1,5 @@
 ﻿using ConsoleApp3;
 
-
 bool IsWall(string s)
 {
     return s == "█";
@@ -13,23 +12,25 @@ List<Point> GetNeighbours(string[,] map, Point p)
     int px = p.Column;
     int py = p.Row;
     
-    // zroby optymalnishe cherez offset
-    if (py + 1 < map.GetLength(1) && py + 1 >= 0 && px < map.GetLength(0) && px >= 0 && !IsWall(map[px, py + 1]))
-    {
-        result.Add(new Point(px, py + 1));
+    // zrobyla optymalnishe cherez offset
+    int[,] offsets = {
+        { 0, 1 },
+        { 0, -1 },
+        { 1, 0 },
+        { -1, 0 }
+    };
+
+    for (int i = 0; i < offsets.GetLength(0); i++) {
+        int dx = offsets[i, 0];
+        int dy = offsets[i, 1];
+        int nx = px + dx;
+        int ny = py + dy;
+
+        if (nx >= 0 && nx < map.GetLength(0) && ny >= 0 && ny < map.GetLength(1) && !IsWall(map[nx, ny])) {
+            result.Add(new Point(nx, ny));
+        }
     }
-    if (py - 1 < map.GetLength(1) && py - 1 >= 0 && px < map.GetLength(0) && px >= 0 && !IsWall(map[px, py - 1]))
-    {
-        result.Add(new Point(px, py - 1));
-    }
-    if (py < map.GetLength(1) && py >= 0 && px + 1 < map.GetLength(0) && px + 1 >= 0 && !IsWall(map[px + 1, py]))
-    {
-        result.Add(new Point(px+1, py));
-    }
-    if (py < map.GetLength(1) && py >= 0 && px - 1 < map.GetLength(0) && px - 1 >= 0 && !IsWall(map[px - 1, py]))
-    {
-        result.Add(new Point(px-1, py));
-    }
+
 
     return result;
 }
@@ -132,8 +133,8 @@ var generator = new MapGenerator(new MapGeneratorOptions()
 
 string[,] map = generator.Generate();
 
-Point start = new Point(10, 5);
-Point goal = new Point(0, 2);
+Point start = new Point(6, 3);
+Point goal = new Point(10, 5);
 List<Point> path = GetShortestPath(map, start, goal);
 
 new MapPrinter().Print(map, path);
